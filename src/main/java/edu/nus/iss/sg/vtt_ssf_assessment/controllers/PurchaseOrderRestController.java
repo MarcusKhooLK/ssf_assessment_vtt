@@ -32,20 +32,20 @@ public class PurchaseOrderRestController {
     
     @PostMapping(path="", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> postPurchaseOrder(@RequestBody String payload) {
-        
+
         InputStream is = new ByteArrayInputStream(payload.getBytes());
         JsonReader reader = Json.createReader(is);
         JsonObject poObj = reader.readObject();
-        
+
         String name = poObj.getString("name");
-        JsonArray listItems = poObj.getJsonArray("lineItems");
+        JsonArray lineItems = poObj.getJsonArray("lineItems");
         Map<String, Integer> itemMap = new HashMap<>();
 
-        for(int i = 0; i < listItems.size(); i++) {
-            JsonObject item = listItems.getJsonObject(i);
+        for(int i = 0; i < lineItems.size(); i++) {
+            JsonObject item = lineItems.getJsonObject(i);
             itemMap.put(item.getString("item"), item.getInt("quantity"));
         }
-  
+
         Optional<Quotation> quotationOpt = quotationSvc.getQuotations(new ArrayList<>(itemMap.keySet()));
 
         if(quotationOpt.isEmpty()) {
